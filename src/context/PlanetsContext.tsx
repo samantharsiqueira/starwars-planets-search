@@ -1,28 +1,14 @@
 import { createContext } from 'react';
+import { Planets } from '../types/types';
 
-// Define the type of the planets
-
-export interface Planets {
-  name: string;
-  rotation_period: string;
-  orbital_period: string;
-  diameter: string;
-  climate: string;
-  gravity: string;
-  terrain: string;
-  surface_water: string;
-  population: string;
-  films: string[];
-  created: string;
-  edited: string;
-  url: string;
-
-}
-// Define the type of the context
 export type PlanetContextType = {
   planets: Planets[];
+  column: { colunm: string; sort: string };
+  handleColumn: () => void;
+  onSortBy: () => void;
+  filter
 };
 
-const PlanetsContext = createContext({ planets: [] } as PlanetContextType);
+const PlanetsContext = createContext({ } as PlanetContextType);
 
 export default PlanetsContext;
