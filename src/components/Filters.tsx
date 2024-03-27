@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { FiltersType, Planets } from '../types/types';
+import { FiltersType } from '../types/types';
 import PlanetsContext from '../context/PlanetsContext';
 
 function Filter() {
@@ -30,7 +30,11 @@ function Filter() {
     // Filtra os planetas de acordo com os filtros aplicados
     const filterPlanets = planets.filter((planet) => {
       // Converte o valor da coluna para número para resolver o problema do unknown
-      const planetValue = planet[column] === 'unknown' ? 0 : Number(planet[column]);
+      if (planet[column] === 'unknown') {
+        return false;
+      }
+
+      const planetValue = Number(planet[column]);
       if (comparison === 'maior que') {
         return planetValue > Number(value);
       }
