@@ -1,13 +1,13 @@
 import './App.css';
 import Table from './components/Table';
-import NumberFilter from './components/Filters';
 import PlanetsProvider from './context/PlanetsProvider';
+import Filters from './components/Filters';
 
 function App() {
   return (
 
     <PlanetsProvider>
-      <NumberFilter />
+      <Filters />
       <Table />
     </PlanetsProvider>
   );

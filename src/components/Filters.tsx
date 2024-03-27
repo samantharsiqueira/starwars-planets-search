@@ -1,99 +1,104 @@
-import { useContext, useState } from 'react';
-import PlanetsContext, { Planets } from '../context/PlanetsContext';
-import Table from './Table';
+import React, { useState, useContext } from 'react';
+import { FiltersType, Planets } from '../types/types';
+import PlanetsContext, { PlanetContextType } from '../context/PlanetsContext';
 
-function NumberFilter() {
-  const { planets } = useContext(PlanetsContext); // Esse fica imutavel, o array original
-  const [filterColumn, setFilterColumn] = useState<string>(''); // Dropdown de coluna
-  const [filterComparison, setFilterComparison] = useState<string>(''); // Maior que, menor que, igua
-  const [filteredValue, setFilteredValue] = useState<string>('');
-  const [filteredPlanets, setFilteredPlanets] = useState<Planets[]>([]); // Esse armazena os planetas filtrados
+function Filter() {
+  const { planets } = useContext(PlanetsContext);
+  const [column, setColumn] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [value, setValue] = useState(0);
+  const [columnOptions, setColumnOptions] = useState<string[]>([
+    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
+  ]); // // Estado para as opções de coluna disponíveis
+  const [filters, setFilters] = useState<FiltersType[]>([]); // Estado para os filtros aplicados
 
-  // Filter the planets based on the selected column, comparison and value
-  const handleColumn = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterColumn(event.target.value);
+  const allColumns = [
+    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
+  ];
+
+  const handleColumnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setColumn(event.target.value);
   };
 
-  const handleComparison = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterComparison(event.target.value);
+  const handleComparisonChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setComparison(event.target.value);
   };
 
-  const handleFilteredValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilteredValue(event.target.value);
+  const handleValueChange = (event:React.ChangeEvent<HTMLInputElement>) => {
+    setValue(Number(event.target.value));
   };
 
-  const applyFilter = (planet: Planets) => {
-    const filter = {
-      column: filterColumn,
-      comparison: filterComparison,
-      value: filteredValue,
-    };
-    if (!filterColumn || !filterComparison || !filteredValue) {
-      return true; // Retorna true se nenhum filtro estiver definido
-    }
-
-    // Verifica se o planeta atende aos critérios de todos os filtros
-    return Object.entries(planet).every(([column, columnValue]) => {
-      if (typeof columnValue === 'string' || typeof columnValue === 'number') {
-        const planetValue = parseFloat(columnValue);
-        const number = parseFloat(filteredValue);
-
-        if (filterComparison === 'Maior que') {
-          return planetValue > number;
-        }
-        if (filterComparison === 'Menor que') {
-          return planetValue < number;
-        }
-        if (filterComparison === 'Igual a') {
-          return planetValue === number;
-        }
+  const filterbyNumber = () => {
+    // Filtra os planetas de acordo com os filtros aplicados
+    const filteredPlanets = planets.filter((planet) => {
+      if (comparison === 'maior que') {
+        return Number(planet[column]) > Number(value);
       }
-      return true; // Retorna true por padrão se nenhuma comparação válida for selecionada
+      if (comparison === 'menor que') {
+        return Number(planet[column]) < Number(value);
+      }
+      if (comparison === 'igual a') {
+        return Number(planet[column]) === Number(value);
+      }
+      return false;
     });
+    return filteredPlanets;
   };
 
-  // button filter
-  const handleApplyFilter = () => {
-    const filterPlanets = planets.filter(applyFilter);
-    setFilteredPlanets(filterPlanets);
+  const handleFilter = () => {
+    // Armazenando os filtros em um estado
+    const newOptions = columnOptions.filter((option) => column !== option); // Remove coluna selecionada
+    setColumnOptions(newOptions);
+
+    // Cria um novo filtro com as seleções feitas
+    const newFilter = {
+      column,
+      comparison,
+      value,
+    };
+
+    // Adiciona o novo filtro à lista de filtros aplicados
+    setFilters([...filters, newFilter]);
   };
 
   return (
     <div>
       <select
-        value={ filterColumn }
-        onChange={ handleColumn }
+        name="column"
         data-testid="column-filter"
+        value={ column }
+        onChange={ handleColumnChange }
       >
-        <option value="population">População</option>
-        <option value="orbital_period">Período Orbital</option>
-        <option value="diameter">Diametro</option>
-        <option value="surface_water">Superficie Aquatica</option>
+        {/* Mapeia as opções de coluna disponíveis */}
+        { columnOptions.map((option) => (
+          <option key={ option } value={ option }>{option}</option> // Cria uma opção para cada coluna disponível
+        ))}
       </select>
+
       <select
-        value={ filterComparison }
-        onChange={ handleComparison }
+        name="comparison"
         data-testid="comparison-filter"
+        value={ comparison }
+        onChange={ handleComparisonChange }
       >
-        <option value="maior que">Maior que</option>
-        <option value="menor que">Menor que</option>
-        <option value="igual a">Igual a</option>
+        <option value="maior que">maior que</option>
+        <option value="menor que">menor que</option>
+        <option value="igual a">igual a</option>
       </select>
 
       <input
-        type="text"
-        value={ filteredValue }
-        onChange={ handleFilteredValue }
-        placeholder="Digite um valor"
+        name="value"
         data-testid="value-filter"
+        type="number"
+        value={ value }
+        onChange={ handleValueChange }
       />
 
-      <button onClick={ handleApplyFilter } data-testid="button-filter">
-        Aplicar Filtro
+      <button data-testid="button-filter" onClick={ handleFilter }>
+        Filter
       </button>
-      <Table />
     </div>
   );
 }
 
-export default NumberFilter;
+export default Filter;

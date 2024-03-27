@@ -1,5 +1,4 @@
 export interface Planets {
-  [key: string]: string | string[]; // tentando resolver o problema de tipagem
   name: string;
   rotation_period: string;
   orbital_period: string;
@@ -13,6 +12,7 @@ export interface Planets {
   created: string;
   edited: string;
   url: string;
+  [key: string]: any; // tentando resolver o problma de tipagem
 }
 // Define the type of the context
 export type PlanetContextType = {
@@ -24,9 +24,8 @@ export type ColumnType = {
   sort: string
 };
 
-export type FiltersTypes = {
-  tag: 'population' | 'orbital_period' | 'diameter' |
-  'rotation_period' | 'surface_water';
-  value: 'maior que' | 'menor que' | 'igual a';
-  quantity: number;
+export type FiltersType = {
+  column: string;
+  comparison: string;
+  value: number;
 };
