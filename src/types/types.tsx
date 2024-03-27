@@ -17,6 +17,8 @@ export interface Planets {
 // Define the type of the context
 export type PlanetContextType = {
   planets: Planets[];
+  filteredPlanets: Planets[];
+  setFilteredPlanets: (planets: Planets[]) => void;
 };
 
 export type ColumnType = {

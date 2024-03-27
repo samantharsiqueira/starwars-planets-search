@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { FiltersType, Planets } from '../types/types';
-import PlanetsContext, { PlanetContextType } from '../context/PlanetsContext';
+import PlanetsContext from '../context/PlanetsContext';
 
 function Filter() {
   const { planets } = useContext(PlanetsContext);
@@ -11,10 +11,8 @@ function Filter() {
     'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
   ]); // // Estado para as opções de coluna disponíveis
   const [filters, setFilters] = useState<FiltersType[]>([]); // Estado para os filtros aplicados
-
-  const allColumns = [
-    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
-  ];
+  // const [filteredPlanets, setFilteredPlanets] = useState<Planets[]>([]);
+  const { setFilteredPlanets } = useContext(PlanetsContext);
 
   const handleColumnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setColumn(event.target.value);
@@ -30,19 +28,22 @@ function Filter() {
 
   const filterbyNumber = () => {
     // Filtra os planetas de acordo com os filtros aplicados
-    const filteredPlanets = planets.filter((planet) => {
+    const filterPlanets = planets.filter((planet) => {
+      // Converte o valor da coluna para número para resolver o problema do unknown
+      const planetValue = planet[column] === 'unknown' ? 0 : Number(planet[column]);
       if (comparison === 'maior que') {
-        return Number(planet[column]) > Number(value);
+        return planetValue > Number(value);
       }
+      console.log(planet[column]);
       if (comparison === 'menor que') {
-        return Number(planet[column]) < Number(value);
+        return planetValue < Number(value);
       }
       if (comparison === 'igual a') {
-        return Number(planet[column]) === Number(value);
+        return planetValue === Number(value);
       }
       return false;
     });
-    return filteredPlanets;
+    return filterPlanets;
   };
 
   const handleFilter = () => {
@@ -59,6 +60,11 @@ function Filter() {
 
     // Adiciona o novo filtro à lista de filtros aplicados
     setFilters([...filters, newFilter]);
+
+    // Filtra os planetas
+    const newFilteredPlanets = filterbyNumber();
+    setFilteredPlanets(newFilteredPlanets);
+    console.log(newFilteredPlanets);
   };
 
   return (

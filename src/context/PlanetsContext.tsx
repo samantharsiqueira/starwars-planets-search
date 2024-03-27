@@ -3,7 +3,8 @@ import { Planets } from '../types/types';
 
 export type PlanetContextType = {
   planets: Planets[];
-  column: { colunm: string; sort: string };
+  filteredPlanets: Planets[];
+  setFilteredPlanets: (planets: Planets[]) => void;
 };
 
 const PlanetsContext = createContext({ } as PlanetContextType);

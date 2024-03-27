@@ -10,6 +10,8 @@ type PlanetsProviderProps = {
 function PlanetsProvider({ children }: PlanetsProviderProps) {
   const { planets, loading } = useFetch();
   const [column, setColumn] = useState<ColumnType>({ colunm: '', sort: '' });
+  const [filteredPlanets, setFilteredPlanets] = useState<Planets[]>([]);
+
   const starWars = planets.map((key: Planets) => (
     {
       name: key.name,
@@ -41,6 +43,8 @@ function PlanetsProvider({ children }: PlanetsProviderProps) {
     column,
     handleColumn,
     onSortBy: handleSortBy,
+    filteredPlanets,
+    setFilteredPlanets,
   };
 
   return (
