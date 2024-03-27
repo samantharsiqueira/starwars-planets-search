@@ -6,7 +6,7 @@ function Filter() {
   const { planets } = useContext(PlanetsContext);
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState('0');
   const [columnOptions, setColumnOptions] = useState<string[]>([
     'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
   ]); // // Estado para as opções de coluna disponíveis
@@ -23,13 +23,13 @@ function Filter() {
   };
 
   const handleValueChange = (event:React.ChangeEvent<HTMLInputElement>) => {
-    setValue(Number(event.target.value));
+    setValue(event.target.value);
   };
 
   const filterbyNumber = () => {
     // Filtra os planetas de acordo com os filtros aplicados
     const filterPlanets = planets.filter((planet) => {
-      // Converte o valor da coluna para número para resolver o problema do unknown
+      // Verifica se a coluna selecionada é 'unknown'
       if (planet[column] === 'unknown') {
         return false;
       }

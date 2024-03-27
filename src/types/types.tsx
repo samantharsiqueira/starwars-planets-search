@@ -29,5 +29,5 @@ export type ColumnType = {
 export type FiltersType = {
   column: string;
   comparison: string;
-  value: number;
+  value: string;
 };
