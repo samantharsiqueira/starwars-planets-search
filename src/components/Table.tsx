@@ -2,15 +2,8 @@ import React, { useContext, useState } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
 
 function Table() {
-  const { planets, filteredPlanets } = useContext(PlanetsContext);
+  const { filteredPlanets } = useContext(PlanetsContext);
   const [filterText, setFilterText] = useState('');
-
-  const planetData = filteredPlanets
-  && filteredPlanets.length > 0 ? filteredPlanets : planets;
-
-  const textFilteredPlanets = planetData.filter((planet) => {
-    return planet.name.toLowerCase().includes(filterText.toLowerCase());
-  });
 
   const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterText(event.target.value);
@@ -44,23 +37,27 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {textFilteredPlanets.map((planet) => (
-            <tr key={ planet.name }>
-              <td>{planet.name}</td>
-              <td>{planet.rotation_period}</td>
-              <td>{planet.orbital_period}</td>
-              <td>{planet.diameter}</td>
-              <td>{planet.climate}</td>
-              <td>{planet.gravity}</td>
-              <td>{planet.terrain}</td>
-              <td>{planet.surface_water}</td>
-              <td>{planet.population}</td>
-              <td>{planet.films}</td>
-              <td>{planet.created}</td>
-              <td>{planet.edited}</td>
-              <td>{planet.url}</td>
-            </tr>
-          ))}
+          {filteredPlanets
+  && filteredPlanets.filter((planet) => {
+    return planet.name.toLowerCase().includes(filterText.toLowerCase());
+  })
+    .map((planet) => (
+      <tr key={ planet.name }>
+        <td>{planet.name}</td>
+        <td>{planet.rotation_period}</td>
+        <td>{planet.orbital_period}</td>
+        <td>{planet.diameter}</td>
+        <td>{planet.climate}</td>
+        <td>{planet.gravity}</td>
+        <td>{planet.terrain}</td>
+        <td>{planet.surface_water}</td>
+        <td>{planet.population}</td>
+        <td>{planet.films}</td>
+        <td>{planet.created}</td>
+        <td>{planet.edited}</td>
+        <td>{planet.url}</td>
+      </tr>
+    ))}
         </tbody>
       </table>
     </div>

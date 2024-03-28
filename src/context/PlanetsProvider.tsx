@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useFetch from '../hooks/useFetch';
 import { Planets, ColumnType } from '../types/types';
 import PlanetsContext from './PlanetsContext';
@@ -10,7 +10,10 @@ type PlanetsProviderProps = {
 function PlanetsProvider({ children }: PlanetsProviderProps) {
   const { planets, loading } = useFetch();
   const [column, setColumn] = useState<ColumnType>({ colunm: '', sort: '' });
-  const [filteredPlanets, setFilteredPlanets] = useState<Planets[]>([]);
+  const [filteredPlanets, setFilteredPlanets] = useState<Planets[]>(planets);
+  console.log(planets);
+
+  useEffect(() => { setFilteredPlanets(planets); }, [planets]);
 
   const starWars = planets.map((key: Planets) => (
     {
