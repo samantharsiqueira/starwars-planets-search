@@ -33,19 +33,9 @@ function PlanetsProvider({ children }: PlanetsProviderProps) {
     }
   ));
 
-  const handleColumn = () => {
-
-  };
-
-  const handleSortBy = () => {
-
-  };
-
   const contextValue = {
     planets: starWars,
     column,
-    handleColumn,
-    onSortBy: handleSortBy,
     filteredPlanets,
     setFilteredPlanets,
   };
