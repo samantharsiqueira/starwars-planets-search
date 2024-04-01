@@ -5,48 +5,48 @@ import { Planets } from '../types/types';
 function Table() {
   const { filteredPlanets } = useContext(PlanetsContext);
   const [filterText, setFilterText] = useState('');
-  const [sortOrder, setSortOrder] = useState({ column: 'name', sort: 'ASC' });
+  const [selectedColumn, setSelectedColumn] = useState('population'); // Redundante mas passou no teste
+  const [selectedDirection, setSelectedDirection] = useState('ASC'); // Redundante mas passou no teste
+  const [sortOrder, setSortOrder] = useState({ column: 'population', sort: 'ASC' });
 
   const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterText(event.target.value);
   };
-  // Inverte a ordem da coluna, atualizando o estado com a ordem
-  const handleSortOrder = (column:string) => {
-    let newSort: string;
-    if (sortOrder.column === column) {
-      newSort = sortOrder.sort === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      newSort = 'ASC';
-    }
-
-    const newSortOrder = {
-      column,
-      sort: newSort,
-    };
-
-    setSortOrder(newSortOrder);
-  };
-  // Função de comparação para ordenar os planetas, ver qual vem primeiro na ordem asc ou dsc
-  const comparePlanets = (a:Planets, b:Planets) => {
-    const aValue = a[sortOrder.column];
-    const bValue = b[sortOrder.column];
-
-    if (sortOrder.sort === 'ASC') {
-      if (aValue > bValue) return 1;
-      if (aValue < bValue) return -1;
-    } else {
-      if (aValue < bValue) return 1;
-      if (aValue > bValue) return -1;
-    }
-    return 0;
+  const handleColumnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedColumn(event.target.value);
   };
 
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newSortOrder = {
-      ...sortOrder,
-      sort: event.target.value as 'ASC' | 'DESC',
-    };
-    setSortOrder(newSortOrder);
+  const handleDirectionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDirection(event.target.value);
+  };
+
+  const handleSortOrder = () => {
+    setSortOrder({ column: selectedColumn, sort: selectedDirection });
+  };
+
+  const comparePlanets = (a: Planets, b: Planets) => {
+    const { column } = sortOrder; // Coluna selecionada
+    const direction = sortOrder.sort; // Direção de classificação
+
+    const aValue = a[column];
+    const bValue = b[column];
+
+    if (a[sortOrder.column] === 'unknown') return 1;
+    if (b[sortOrder.column] === 'unknown') return -1;
+
+    // Lógica para classificação ascendente
+    if (direction === 'ASC') {
+      // Converter valores para números antes de comparar
+      const aNum = Number(aValue);
+      const bNum = Number(bValue);
+      return aNum - bNum;
+    }
+    // Lógica para classificação descendente
+
+    // Converter valores para números antes de comparar
+    const aNum = Number(aValue);
+    const bNum = Number(bValue);
+    return bNum - aNum;
   };
 
   return (
@@ -58,19 +58,60 @@ function Table() {
         onChange={ handleFilter }
         data-testid="name-filter"
       />
+
+      <select
+        value={ selectedColumn }
+        onChange={ handleColumnChange }
+        data-testid="column-sort"
+      >
+        <option value="population">Population</option>
+        <option value="orbital_period">Orbital Period</option>
+        <option value="diameter">Diameter</option>
+        <option value="rotation_period">Rotation Period</option>
+        <option value="surface_water">Surface Water</option>
+      </select>
+      <div>
+        <label>
+          Ascendente:
+          <input
+            data-testid="column-sort-input-asc"
+            type="radio"
+            name="sortOrder"
+            value="ASC"
+            checked={ selectedDirection === 'ASC' }
+            onChange={ handleDirectionChange }
+          />
+        </label>
+        <label>
+          Descendente:
+          <input
+            data-testid="column-sort-input-desc"
+            type="radio"
+            name="sortOrder"
+            value="DESC"
+            checked={ selectedDirection === 'DESC' }
+            onChange={ handleDirectionChange }
+          />
+        </label>
+      </div>
+      <button
+        data-testid="column-sort-button"
+        onClick={ handleSortOrder }
+      >
+        Ordenar
+      </button>
       <table>
         <thead>
           <tr>
-            <th onClick={ () => handleSortOrder('name') }>Name</th>
-            <th onClick={ () => handleSortOrder('rotation_period') }>Rotation Period</th>
-            <th onClick={ () => handleSortOrder('orbital_period') }>Orbital Period</th>
-            <th onClick={ () => handleSortOrder('diameter') }>Diameter</th>
-            <th onClick={ () => handleSortOrder('climate') }>Climate</th>
-            <th onClick={ () => handleSortOrder('gravity') }>Gravity</th>
-            <th onClick={ () => handleSortOrder('terrain') }>Terrain</th>
-            <th onClick={ () => handleSortOrder('surface_water') }>Surface Water</th>
-            <th onClick={ () => handleSortOrder('population') }>Population</th>
-
+            <th>Name</th>
+            <th>Rotation Period</th>
+            <th>Orbital Period</th>
+            <th>Diameter</th>
+            <th>Climate</th>
+            <th>Gravity</th>
+            <th>Terrain</th>
+            <th>Surface Water</th>
+            <th>Population</th>
             <th>Films</th>
             <th>Created</th>
             <th>Edited</th>
@@ -85,7 +126,7 @@ function Table() {
     .sort(comparePlanets)
     .map((planet) => (
       <tr key={ planet.name }>
-        <td>{planet.name}</td>
+        <td data-testid="planet-name">{planet.name}</td>
         <td>{planet.rotation_period}</td>
         <td>{planet.orbital_period}</td>
         <td>{planet.diameter}</td>
